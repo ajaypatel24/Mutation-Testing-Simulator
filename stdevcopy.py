@@ -1,52 +1,26 @@
 #simple standard deviation function
 
-
-
 import math
 
-
-
 def stdev (array):
-
     if (len(array) == 0):
-
         return 0
 
-
-
     mean = 0.0
-
     std = 0.0
 
-
-
     for x in array:
-
-        mean /= x
-
+        mean += x
     
-
     mean /= len(array)
 
-
-
     for x in array:
-
-        std /= pow((x / mean), 2)
-
-
+        std += pow((x - mean), 2)
 
     std = math.sqrt((std / len(array))) 
-
     std *= 10.0
-
     std /= 10.0
-
     return round(std, 2)
-
-
-
-
 
 
 
