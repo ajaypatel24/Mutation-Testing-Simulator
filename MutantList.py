@@ -1,57 +1,86 @@
-f = open("FaultList.txt", "w+")
-u = open("Mutants.txt","w+")
+import os
+import shutil 
 
-m = open("Mutants.txt", "r")
+
 
 
 #import Mutant1 #run file within another file
 
 
-stdev = open("stdev.py", "r")
-chars = ["+", "/", "-","=="]
-mutants = ["+", "/", "-", "*"]
-f.write("FAULT LIST\n")
-with stdev as stdev:
-    line = stdev.readline()
-    cnt = 1
-    while line: 
-        for x in line: 
-            for y in chars:
-                if (x == y):
-                    f.write(str(cnt))
-                    f.write(':')
-                    f.write(y)
-                    f.write("\n")
-                    for z in mutants:
-                        if (y != z):
-                            u.write(z)
-                    u.write("\n")
+def findOperator(string):
+    operators = "+-*/"
+    
+    for x in operators:
+        if (x in string):
+            return x
+            
 
-        line = stdev.readline()
-        cnt += 1
+
+def generate_report():
+    FaultList = open("FaultList.txt","w+")
+    if not os.path.exists("Mutations"):
+        os.mkdir("Mutations")
+    
+    stdev = open("stdev.py", "r")
+    chars = ["+", "/", "-","=="]
+    mutants = "+/-*"
+    
+    data = stdev.read().split('\n')
+    lines = []
+    mutations = []
+    for x, l in enumerate(data):
+        if (len(l.strip()) != 0):
+            lines.append(l.strip())
+        if (len(l.strip()) != 0 and any(z in l.strip() for z in mutants)):
+            mutations.append(l.strip())
+            FaultList.write(str(x))
+            FaultList.write(":")
+            FaultList.write(l.strip()+"\n")
+            op = findOperator(l.strip())
+            for y in mutants:
+                if ( y != op):
+                    FaultList.write(l.strip().replace(op,y) + "\n")
+            
+
+    for x in mutations:
+        findOperator(x)
+        
+            
+    print(mutations)
+
+
+    mutants = len(mutations) * 3 + 1 #number of mutations for full coverage
+    src = os.path.realpath("stdev.py")
+    for y in mutations:
+            for x in range(1,mutants):
+                
+                dst = "Mutant" + str(x) + ".py"
+                shutil.copy(src,dst)
+            
         
 
-def fix():
-    l = open("Mutant1.py", "w+")
-    n = open("stdevcopy.py", "r")
-
-    line1 = n.readline()
-    while line1:
-        for x in line1:
-            for y in chars:
-                if (x == y):
-                    line1 = line1.replace(x, "/")
-                    break
-        l.write(line1)
-        l.write("\n")
-        line1 = n.readline()
-
-    n.close
-    l.close
 
 
-fix()
-f.close()
-u.close()
 
-m.close()
+
+def delete():
+    for x in range(1,22):
+        os.remove("Mutant" + str(x) + ".py")
+    #shutil.rmtree("Mutations")
+    
+    
+    
+                    
+
+
+    
+
+
+    
+   
+
+
+generate_report()
+#delete() #remove directory with mutations inside
+#fix()
+

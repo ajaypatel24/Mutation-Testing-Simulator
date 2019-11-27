@@ -15,7 +15,8 @@ def stdev (array):
     mean /= len(array)
 
     for x in array:
-        std += pow((x - mean), 2)
+        q = (x - mean)
+        std += pow(q, 2)
 
     std = math.sqrt((std / len(array))) 
     std *= 10.0
