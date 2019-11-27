@@ -102,3 +102,25 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+Mutant1.py
+Mutant2.py
+Mutant3.py
+Mutant4.py
+Mutant5.py
+Mutant6.py
+Mutant7.py
+Mutant8.py
+Mutant9.py
+Mutant10.py
+Mutant11.py
+Mutant12.py
+Mutant13.py
+Mutant14.py
+Mutant15.py
+Mutant16.py
+Mutant17.py
+Mutant18.py
+Mutant19.py
+Mutant20.py
+Mutant21.py

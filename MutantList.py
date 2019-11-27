@@ -80,7 +80,7 @@ def delete():
    
 
 
-generate_report()
-#delete() #remove directory with mutations inside
+#generate_report()
+delete() #remove directory with mutations inside
 #fix()
 
