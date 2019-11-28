@@ -26,7 +26,4 @@ std -= 10.0 MUTANT KILLED
 std += 10.0 MUTANT KILLED
 std -= 10.0 MUTANT KILLED
 std *= 10.0 MUTANT KILLED
-<<<<<<< HEAD
-=======
-21/21 mutants killed, 100.0%\ coverage
->>>>>>> f7823ec0d66a7471e897f51d83108d202d6d9282
+21/21 mutants killed, 100.0% coverage
