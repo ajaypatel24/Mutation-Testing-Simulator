@@ -21,6 +21,8 @@ def generate_report():
     FaultUse = open("FaultUse.txt", "w+")
     if not os.path.exists("Mutations"):
         os.mkdir("Mutations")
+    if not os.path.exists("Mu"):
+        os.mkdir("Mu")
     
     stdev = open("stdev.py", "r")
     chars = ["+", "/", "-","=="]
@@ -48,7 +50,11 @@ def generate_report():
 
     return mutations
         
-            
+def cleanDir():
+    shutil.rmtree("Mu")
+
+
+
 def injectMutant(mutations):
     
     FaultUse = open("FaultUse.txt", "r")
@@ -71,10 +77,10 @@ def injectMutant(mutations):
                     memory = y
                     break
                 if (memory != "b"):
-                    dst = "Mu" + str(counter) + ".py"
+                    dst = "Mu/T" + str(counter) + ".py"
                     shutil.copy(src,dst)
                     Mutant = open(dst, "r")
-                    dst1 = "Mutant" + str(counter) + ".py"
+                    dst1 = "Mutations/Mutant" + str(counter) + ".py"
                     File = open(dst1, "w+")
                     for u in Mutant:
                         if (u == memory):
@@ -82,32 +88,19 @@ def injectMutant(mutations):
                             u = u.replace(u, y)
                         File.write(u)
                     count += 1
+                    File.close()
+                    Mutant.close()
+                    if (counter % 4 == 1):
+                        os.remove(dst1)
                     if (count == 3):
                         break
                     
                     
-                        
+    cleanDir()                  
 
                         
             
-            
-            '''
-            print("mem:" + memory)
-            dst = "Mu" + str(x) + ".py"
-            shutil.copy(src,dst)
-            Mutant = open(dst, "r")
-            #print("Y:" + y)
-            for z in Mutant:
-                z = z.strip()
-                if (len(z) == 0):
-                    continue
-                #print("Z:" + z)
-                if (y.strip() == z):
-                    print("Equality")
-                    memory = z
-                    break
-                   
-               ''' 
+           
 
             
             
