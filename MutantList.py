@@ -12,112 +12,87 @@ def findOperator(string):
             return x
             
 
+#The following method will generate a list of all mutations sites and possible mutations on the operator 
+def generateReport(): 
+    FaultList = open("FaultList.txt","w+") #report (strip() used)
+    FaultUse = open("FaultUse.txt", "w+") #will be used for injection (strip() not used)
 
-def generateReport():
-    FaultList = open("FaultList.txt","w+")
-    FaultUse = open("FaultUse.txt", "w+")
-    if not os.path.exists("Mutations"):
+    if not os.path.exists("Mutations"): #makes dir to hold mutation files
         os.mkdir("Mutations")
   
     
-    stdev = open("stdev.py", "r")
-    chars = ["+", "/", "-","=="]
+    stdev = open("stdev.py", "r") #open SUT
     mutants = "+/-*"
     
     data = stdev.read().split('\n')
     lines = []
-    mutations = []
+
     for x, l in enumerate(data):
         if (len(l.strip()) != 0):
             lines.append(l.strip())
-        if (len(l.strip()) != 0 and any(z in l.strip() for z in mutants)):
-            mutations.append(l.strip())
-            #FaultList.write(str(x))
-            #FaultList.write(":")
-            FaultList.write(">MUTATION SITE LINE " + str(x) + ": ")
+
+        if (len(l.strip()) != 0 and any(z in l.strip() for z in mutants)): #if any of the lines contain an operator
+            
+            FaultList.write(">MUTATION SITE LINE " + str(x) + ": ") #adds mutation sites and list of possible mutations to FaultList.txt
             FaultList.write(l.strip() + "\n")
             
             
-            FaultUse.write(l+"\n")
+            FaultUse.write(l+"\n") #FaultUse.txt gets unstripped 
             
-            op = findOperator(l.strip())
+            op = findOperator(l.strip()) #get operator contained in line
             for y in mutants:
-                if ( y != op):
-                    FaultList.write(l.strip().replace(op,y) + "\n")
-                    FaultUse.write(l.replace(op,y) +"\n")
+                if (y != op): #generate all possible mutations
+                    FaultList.write(l.strip().replace(op,y) + "\n") #FaultList gets stripped version
+                    FaultUse.write(l.replace(op,y) +"\n") #FaultUse gets unstripped 
             
 
-    return mutations
-        
-def cleanDir():
-    shutil.rmtree("Mu")
 
-
-
+#the following method injects the mutations created in generateReport into the SUT, each injection creates a new .py file 
+#to run against the SUT to compare outputs
 def injectMutant():
     
     FaultUse = open("FaultUse.txt", "r")
-    #mutants = len(mutations) * 3 + 1 #number of mutations for full coverage
-    src = os.path.realpath("stdev.py")
-    memory = "b"
-    count = 0
-    counter = 0
-    for y in FaultUse:
+    src = os.path.realpath("stdev.py") #open SUT later on
+    memory = "b" #default value for memory 
+    count = 0 #each operator has 3 mutations 
+    counter = 0 #universal counter for mutant ID and line number 
+    for mu in FaultUse: #iterate through all mutations
             counter += 1
             stdev = open("stdev.py", "r")
             for z in stdev:
-                if (y == z):
-                    memory = y
+                if (mu == z):
+                    memory = mu #keep the original line in memory
                     break
                 if (memory != "b"):
-                    Mutant = open(src, "r")
-                    dst1 = "Mutations/Mutant" + str(counter) + ".py"
+                    SUT = open(src, "r")
+                    dst1 = "Mutations/Mutant" + str(counter) + ".py" 
                     if(dst1 not in injectedFiles):
                         injectedFiles.append(dst1)
-                    File = open(dst1, "w+")
-                    for u in Mutant:
-                        if (u == memory):
-                            u = u.replace(u, y)
+                    File = open(dst1, "w+") #create file with name dst1
+                    for u in SUT: #copy SUT into mutated file
+                        if (u == memory): #value in memory has 3 mutations associated, once this line is hit
+                            u = u.replace(u, mu) #it is replaced with one of the 3 mutations
                         File.write(u)
                     count += 1
                     File.close()
-                    Mutant.close()
-                    if (counter % 4 == 1):
-                        os.remove(dst1)
-                    if (count == 3):
+                    SUT.close()
+                    if (counter % 4 == 1): #some files get generated with a missplaced mutant because the mutant is equal to the SUT
+                        os.remove(dst1) #remove these files
+                    if (count == 3): #once 3 mutations have been inserted, change memory value by breaking loop
                         break
     
+    #close all files to avoid run time errors
     File.close()
-    Mutant.close()
+    SUT.close()
     FaultUse.close()
     stdev.close()
-    os.remove("FaultUse.txt")
+    os.remove("FaultUse.txt") #remove FaultUse.txt, it is no longer needed
                     
                   
 
-                        
-            
-           
-
-            
-            
-
-            
-            
-                
-            
-        
-
-
-
-
-
-def delete():
-    for x in range(1,22):
-        os.remove("Mutant" + str(x) + ".py")
-    #shutil.rmtree("Mutations")
     
     
+
 def KillMutant(): 
     
 
@@ -150,10 +125,8 @@ def KillMutant():
     
    
 
-generateReport()
-injectMutant()
+generateReport() #start by generating FaultUse.txt
+injectMutant() #inject mutants using FaultUse.txt
 
-KillMutant()
-#delete() #remove directory with mutations inside
-#fix()
+#KillMutant()
 
