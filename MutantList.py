@@ -76,8 +76,8 @@ def injectMutant():
                     SUT.close()
                     if (counter % 4 == 1): #some files get generated with a missplaced mutant because the mutant is equal to the SUT
                         os.remove(dst1) #remove these files
-                        if(dst1 not in injectedFiles):
-                            injectedFiles.append(dst1)
+                    if(dst1 not in injectedFiles and counter % 4 != 1):
+                        injectedFiles.append(dst1)
                     if (count == 3): #once 3 mutations have been inserted, change memory value by breaking loop
                         break
     
@@ -86,6 +86,7 @@ def injectMutant():
     SUT.close()
     FaultUse.close()
     stdev.close()
+    print(injectedFiles)
     os.remove("FaultUse.txt") #remove FaultUse.txt, it is no longer needed
                     
                   
@@ -95,7 +96,6 @@ def injectMutant():
 
 def KillMutant(): 
     
-
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
 
@@ -104,6 +104,7 @@ def KillMutant():
     output = ""
 
     for injected in injectedFiles:
+
 
         #if(position == 32):
         #    print(injected)

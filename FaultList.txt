@@ -8,25 +8,25 @@ mean -= len(array) MUTANT KILLED
 mean *= len(array) MUTANT KILLED
 >MUTATION SITE LINE 18: q = (x - mean)
 q = (x + mean) MUTANT KILLED
-q = (x / mean)
-q = (x * mean)
+q = (x / mean) MUTANT KILLED
+q = (x * mean) MUTANT KILLED
 >MUTATION SITE LINE 19: std += pow(q, 2)
-std /= pow(q, 2)
-std -= pow(q, 2)
-std *= pow(q, 2)
+std /= pow(q, 2) MUTANT KILLED
+std -= pow(q, 2) MUTANT KILLED
+std *= pow(q, 2) MUTANT KILLED
 >MUTATION SITE LINE 21: std = math.sqrt((std / len(array)))
-std = math.sqrt((std + len(array)))
-std = math.sqrt((std - len(array)))
-std = math.sqrt((std * len(array)))
+std = math.sqrt((std + len(array))) MUTANT KILLED
+std = math.sqrt((std - len(array))) MUTANT KILLED
+std = math.sqrt((std * len(array))) MUTANT KILLED
 >MUTATION SITE LINE 22: std *= 10.0
-std += 10.0
-std /= 10.0
-std -= 10.0
+std += 10.0 MUTANT KILLED
+std /= 10.0 MUTANT KILLED
+std -= 10.0 MUTANT KILLED
 >MUTATION SITE LINE 23: std /= 10.0
-std += 10.0
-std -= 10.0
-std *= 10.0
+std += 10.0 MUTANT KILLED
+std -= 10.0 MUTANT KILLED
+std *= 10.0 MUTANT KILLED
 >MUTATION SITE LINE 30: for i in range(1, (len(sys.argv) -1)):
-for i in range(1, (len(sys.argv) +1)):
-for i in range(1, (len(sys.argv) /1)):
-for i in range(1, (len(sys.argv) *1)):
+for i in range(1, (len(sys.argv) +1)): MUTANT KILLED
+for i in range(1, (len(sys.argv) /1)): MUTANT KILLED
+for i in range(1, (len(sys.argv) *1)): MUTANT KILLED
