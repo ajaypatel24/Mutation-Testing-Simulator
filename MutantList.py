@@ -1,7 +1,10 @@
 import os
 import shutil 
 import subprocess
-import re
+import time
+import sys
+import concurrent.futures
+from threading import Thread
 
 injectedFiles = []
 
@@ -90,13 +93,8 @@ def injectMutant():
     print(injectedFiles)
     os.remove("FaultUse.txt") #remove FaultUse.txt, it is no longer needed
                     
-                  
+def killMutant(): 
 
-    
-    
-
-def KillMutant(): 
-    
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
 
@@ -125,16 +123,110 @@ def KillMutant():
 
         position += 1
         
-    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + re.escape("% ") + "coverage\n")
+    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + "% " + "coverage\n")
     
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
 
-    
-                    
+    subprocess.call('clear',shell=True)
 
 
-generateReport() #start by generating FaultUse.txt
-injectMutant() #inject mutants using FaultUse.txt
-KillMutant()
+
+
+def parallelMutant(injectionList, position, validDeviation, lines): 
+
+    newArray = []
+    output = ""
+
+    for injected in injectionList:
+
+        if(">MUTATION SITE " in lines[position]):
+            newArray.append(lines[position])
+            position += 1
+
+        try:
+            output = subprocess.check_output("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+        except (subprocess.CalledProcessError, ValueError, ZeroDivisionError) as e:
+            output = "ERROR"
+
+        if(output != validDeviation):
+            newArray.append(lines[position].strip('\n') + " MUTANT KILLED\n") 
+        else: 
+            newArray.append(lines[position].strip('\n') + " MUTANT ALIVE\n") 
+
+        position += 1
+        
+    return newArray   
+
+
+def startParallel():
+
+    threadOne = (injectedFiles[0:7])
+    threadTwo = (injectedFiles[7:14])
+    threadThree = (injectedFiles[14:21])
+
+    with open('FaultList.txt', 'r') as file:
+        lines = file.readlines()
+
+    validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(parallelMutant, threadOne, 0, validDeviation, lines)
+        threadOne = future.result()
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(parallelMutant, threadTwo, 10, validDeviation, lines)
+        threadTwo = future.result()
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(parallelMutant, threadThree, 19, validDeviation, lines)
+        threadThree = future.result()
+
+    executor.shutdown(wait = True)
+
+    with open('FaultList.txt', 'w') as file:
+        file.writelines(threadOne + threadTwo + threadThree)   
+
+    # clr for windows
+    subprocess.call('clear',shell=True)
+
+def main(): 
+
+    while(1):
+        selection = input("Welcome to the standard deviation mutation tester!\n 1. Test Generation\n 2. Test Injection\n 3. Kill Mutants (Single thread)\n 4. Kill Mutants (Parallel)\n 5. Exit\n")
+        
+        millis = int(round(time.time() * 1000))
+
+        if(selection == "1"):
+            generateReport()
+        elif(selection == "2"):
+            generateReport()
+            injectMutant()
+        elif(selection == "3"):
+            generateReport()
+            injectMutant()
+            killMutant()
+        elif(selection == "4"):
+            generateReport()
+            injectMutant()
+            startParallel()
+        else: 
+            sys.exit()
+        
+        print("Operation complete in " + str((round(time.time() * 1000)) - millis) + " ms. Please verify the generated files")
+
+    sys.exit()
+
+
+if __name__ == "__main__":
+    main()
+   
+
+#generateReport() #start by generating FaultUse.txt
+#injectMutant() #inject mutants using FaultUse.txt
+#KillMutant()
+#startParallel()
+
+
+
 
