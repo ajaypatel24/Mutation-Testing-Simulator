@@ -28,7 +28,7 @@ def stdev (array):
 
 def main(): 
     input = []
-    for i in range(1, (len(sys.argv) -1)):
+    for i in range(1, (len(sys.argv))):
         input.append(float(sys.argv[i]))
 
     stdev(input)

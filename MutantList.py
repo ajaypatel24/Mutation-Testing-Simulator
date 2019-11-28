@@ -1,6 +1,7 @@
 import os
 import shutil 
 import subprocess
+import re
 
 injectedFiles = []
 
@@ -103,12 +104,10 @@ def KillMutant():
     position = 0
     output = ""
 
+    mutantCount = len(injectedFiles)
+    killed = 0
+
     for injected in injectedFiles:
-
-
-        #if(position == 32):
-        #    print(injected)
-        #    break
 
         if(">MUTATION SITE " in lines[position]):
             position += 1
@@ -119,12 +118,14 @@ def KillMutant():
             output = "ERROR"
 
         if(output != validDeviation):
-            lines[position] = lines[position].strip('\n') + " MUTANT KILLED\n"   
+            lines[position] = lines[position].strip('\n') + " MUTANT KILLED\n" 
+            killed += 1  
         else: 
             lines[position] += lines[position].strip('\n') + " MUTANT ALIVE\n"  
 
         position += 1
         
+    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + re.escape("% ") + "coverage\n")
     
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
