@@ -2,6 +2,7 @@ import os
 import shutil 
 import subprocess
 import re
+import time
 
 injectedFiles = []
 
@@ -97,6 +98,8 @@ def injectMutant():
 
 def KillMutant(): 
     
+    start = time.time()
+
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
 
@@ -129,6 +132,12 @@ def KillMutant():
     
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
+
+    end = time.time()
+    elapsed = end-start
+
+    subprocess.call('cls',shell=True)
+    print("TIME ELAPSED FAULT SIMULATION: ", round(elapsed,2))
 
     
                     
