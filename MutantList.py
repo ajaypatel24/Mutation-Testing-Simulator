@@ -209,7 +209,9 @@ def main():
             generateReport()
             injectMutant()
             killMutantThread()
-        else: 
+        else:
+            shutil.rmtree("Mutations")
+            os.remove("FaultList.txt")
             sys.exit()
         
         subprocess.call('cls',shell=True)
