@@ -131,11 +131,15 @@ def KillMutant():
     position = 0
     for injected in injectedFiles:
         print("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5")
-        output = subprocess.check_output("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
-        if(output != validDeviation):
-            lines[position] = lines[position] + " MUTANT ALIVE"   
-        else: 
-            lines[position] = lines[position] + " MUTANT KILLED"   
+        try:
+            output = subprocess.check_output("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+            if(output != validDeviation):
+                lines[position] = lines[position] + " MUTANT ALIVE"   
+            else: 
+                lines[position] = lines[position] + " MUTANT KILLED"  
+        except subprocess.CalledProcessError as e:
+            print("Ignore for now")
+        
     
         position += 1
     

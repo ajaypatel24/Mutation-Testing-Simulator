@@ -1,32 +1,32 @@
 mean += x
 mean /= x
-mean -= x
-mean *= x
+ MUTANT ALIVEmean -= x
+ MUTANT ALIVEmean *= x
 mean /= len(array)
-mean += len(array)
-mean -= len(array)
-mean *= len(array)
+ MUTANT ALIVEmean += len(array)
+ MUTANT ALIVEmean -= len(array)
+ MUTANT ALIVEmean *= len(array)
 q = (x - mean)
-q = (x + mean)
-q = (x / mean)
-q = (x * mean)
+ MUTANT ALIVEq = (x + mean)
+ MUTANT ALIVEq = (x / mean)
+ MUTANT ALIVEq = (x * mean)
 std += pow(q, 2)
-std /= pow(q, 2)
+ MUTANT ALIVEstd /= pow(q, 2)
 std -= pow(q, 2)
-std *= pow(q, 2)
+ MUTANT ALIVEstd *= pow(q, 2)
 std = math.sqrt((std / len(array)))
-std = math.sqrt((std + len(array)))
-std = math.sqrt((std - len(array)))
-std = math.sqrt((std * len(array)))
+ MUTANT ALIVEstd = math.sqrt((std + len(array)))
+ MUTANT ALIVEstd = math.sqrt((std - len(array)))
+ MUTANT ALIVEstd = math.sqrt((std * len(array)))
 std *= 10.0
-std += 10.0
+ MUTANT ALIVEstd += 10.0
+ MUTANT ALIVEstd /= 10.0
+ MUTANT ALIVEstd -= 10.0
 std /= 10.0
-std -= 10.0
-std /= 10.0
-std += 10.0
-std -= 10.0
-std *= 10.0
+ MUTANT ALIVEstd += 10.0
+ MUTANT ALIVEstd -= 10.0
+ MUTANT ALIVEstd *= 10.0
 for i in range(1, (len(sys.argv) -1)):
 for i in range(1, (len(sys.argv) +1)):
-for i in range(1, (len(sys.argv) /1)):
-for i in range(1, (len(sys.argv) *1)):
+ MUTANT ALIVEfor i in range(1, (len(sys.argv) /1)):
+ MUTANT ALIVEfor i in range(1, (len(sys.argv) *1)):
