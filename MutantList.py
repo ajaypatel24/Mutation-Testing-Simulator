@@ -125,21 +125,20 @@ def KillMutant():
         lines = file.readlines()
 
     validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+    output = -1
 
-    position = 0
-    for injected in injectedFiles:
-        print("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5")
+    for position, injected in enumerate(injectedFiles):
+        print(injected , position)
         try:
             output = subprocess.check_output("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
-            if(output != validDeviation):
-                lines[position] = lines[position] + " MUTANT ALIVE"   
-            else: 
-                lines[position] = lines[position] + " MUTANT KILLED"  
-        except subprocess.CalledProcessError as e:
-            print("Ignore for now")
+        except (subprocess.CalledProcessError, ValueError, ZeroDivisionError) as e:
+            output = "ERROR"
+
+        if(output != validDeviation):
+            lines[position] = lines[position].strip('\n') + " MUTANT KILLED\n"   
+        else: 
+            lines[position] += lines[position].strip('\n') + " MUTANT ALIVE\n"  
         
-    
-        position += 1
     
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
@@ -156,7 +155,6 @@ def KillMutant():
 
 generateReport()
 injectMutant()
-
 KillMutant()
 #delete() #remove directory with mutations inside
 #fix()
