@@ -92,8 +92,13 @@ def injectMutant():
                     
                   
 
+ 
+        
+        
     
-    
+
+
+
 
 def KillMutant(): 
     
@@ -101,6 +106,7 @@ def KillMutant():
         lines = file.readlines()
 
     validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+    
     position = 0
     output = ""
 
@@ -125,16 +131,95 @@ def KillMutant():
 
         position += 1
         
-    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + re.escape("% ") + "coverage\n")
+    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + "% " + "coverage\n")
     
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
 
+
+
+
+
+
+def parallelSimulation(): 
+    t = len(injectedFiles)
+    h = t//3
+    p1 = injectedFiles[0:t//3]
+    p2 = injectedFiles[t//3 + 1:2 * t//3]
+    p3 = injectedFiles[2 * t//3:t]
+
+
+    for x,y,z in zip(p1,p2,p3):
+        process1 = subprocess.Popen(["python",z], stdout=subprocess.PIPE)
+        process2 = subprocess.Popen(["python",y])
+        process3 = subprocess.Popen(["python",z])
+
+        process1.wait()
+        process2.wait()
+        process3.wait()
+
+    with open('FaultList.txt', 'r') as file:
+        lines = file.readlines()
+
+    validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
     
+    position = 0
+    output = ""
+
+    mutantCount = len(injectedFiles)
+    killed = 0
+
+    for x,y,z in zip(p1,p2,p3):
+
+        if(">MUTATION SITE " in lines[position]):
+            position += 1
+
+        try:
+            output = subprocess.check_output("python " + x + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+            output2 = subprocess.check_output("python " + y + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+            output3 = subprocess.check_output("python " + z + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+            if(output != validDeviation):
+                h = int(re.search(r'\d+', x).group())
+                print(h)
+                lines[h] = lines[h].strip('\n') + " MUTANT KILLED\n" 
+                killed += 1  
+            if(output2 != validDeviation):
+                h = int(re.search(r'\d+', y).group())
+                lines[h] = lines[h].strip('\n') + " MUTANT KILLED\n" 
+                killed += 1  
+            if(output3 != validDeviation):
+                h = int(re.search(r'\d+', z).group())
+                lines[h] = lines[h].strip('\n') + " MUTANT KILLED\n" 
+                killed += 1  
+            else: 
+                lines[position] += lines[position].strip('\n') + " MUTANT ALIVE\n" 
+        except (subprocess.CalledProcessError, ValueError, ZeroDivisionError) as e:
+            output = "ERROR"
+
+         
+
+        position += 1
+        
+    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + "% " + "coverage\n")
+    
+    with open('FaultList.txt', 'w') as file:
+        file.writelines(lines)
+   
+
+    
+
+    
+
+        print (process1.communicate())
+
+        #output = subprocess.check_output("python",x, "-i","5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
                     
 
 
 generateReport() #start by generating FaultUse.txt
 injectMutant() #inject mutants using FaultUse.txt
-KillMutant()
+parallelSimulation()
+#parallelSimulation()
+
+
 
