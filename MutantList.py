@@ -1,10 +1,15 @@
 import os
 import shutil 
 import subprocess
+<<<<<<< HEAD
 import time
 import sys
 import concurrent.futures
 from threading import Thread
+=======
+import re
+import time
+>>>>>>> f7823ec0d66a7471e897f51d83108d202d6d9282
 
 injectedFiles = []
 
@@ -95,6 +100,16 @@ def injectMutant():
                     
 def killMutant(): 
 
+<<<<<<< HEAD
+=======
+    
+    
+
+def KillMutant(): 
+    
+    start = time.time()
+
+>>>>>>> f7823ec0d66a7471e897f51d83108d202d6d9282
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
 
@@ -128,6 +143,7 @@ def killMutant():
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
 
+<<<<<<< HEAD
     subprocess.call('clear',shell=True)
 
 
@@ -227,6 +243,16 @@ if __name__ == "__main__":
 #KillMutant()
 #startParallel()
 
+=======
+    end = time.time()
+    elapsed = end-start
+
+    subprocess.call('cls',shell=True)
+    print("TIME ELAPSED FAULT SIMULATION: ", round(elapsed,2))
+
+    
+                    
+>>>>>>> f7823ec0d66a7471e897f51d83108d202d6d9282
 
 
 
