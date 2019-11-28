@@ -1,5 +1,6 @@
-mean += x
+>MUTATION SITE LINE 13: mean += x
 mean /= x
+<<<<<<< HEAD
  MUTANT ALIVEmean -= x
  MUTANT ALIVEmean *= x
 mean /= len(array)
@@ -27,6 +28,35 @@ std /= 10.0
  MUTANT ALIVEstd -= 10.0
  MUTANT ALIVEstd *= 10.0
 for i in range(1, (len(sys.argv) -1)):
+=======
+mean -= x
+mean *= x
+>MUTATION SITE LINE 15: mean /= len(array)
+mean += len(array)
+mean -= len(array)
+mean *= len(array)
+>MUTATION SITE LINE 18: q = (x - mean)
+q = (x + mean)
+q = (x / mean)
+q = (x * mean)
+>MUTATION SITE LINE 19: std += pow(q, 2)
+std /= pow(q, 2)
+std -= pow(q, 2)
+std *= pow(q, 2)
+>MUTATION SITE LINE 21: std = math.sqrt((std / len(array)))
+std = math.sqrt((std + len(array)))
+std = math.sqrt((std - len(array)))
+std = math.sqrt((std * len(array)))
+>MUTATION SITE LINE 22: std *= 10.0
+std += 10.0
+std /= 10.0
+std -= 10.0
+>MUTATION SITE LINE 23: std /= 10.0
+std += 10.0
+std -= 10.0
+std *= 10.0
+>MUTATION SITE LINE 30: for i in range(1, (len(sys.argv) -1)):
+>>>>>>> a495002c408153fc9250946e4c1235c3a105ebcf
 for i in range(1, (len(sys.argv) +1)):
  MUTANT ALIVEfor i in range(1, (len(sys.argv) /1)):
  MUTANT ALIVEfor i in range(1, (len(sys.argv) *1)):

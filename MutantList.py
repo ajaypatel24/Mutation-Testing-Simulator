@@ -13,13 +13,12 @@ def findOperator(string):
             
 
 
-def generate_report():
+def generateReport():
     FaultList = open("FaultList.txt","w+")
     FaultUse = open("FaultUse.txt", "w+")
     if not os.path.exists("Mutations"):
         os.mkdir("Mutations")
-    if not os.path.exists("Mu"):
-        os.mkdir("Mu")
+  
     
     stdev = open("stdev.py", "r")
     chars = ["+", "/", "-","=="]
@@ -35,7 +34,10 @@ def generate_report():
             mutations.append(l.strip())
             #FaultList.write(str(x))
             #FaultList.write(":")
-            FaultList.write(l.strip()+"\n")
+            FaultList.write(">MUTATION SITE LINE " + str(x) + ": ")
+            FaultList.write(l.strip() + "\n")
+            
+            
             FaultUse.write(l+"\n")
             
             op = findOperator(l.strip())
@@ -52,7 +54,7 @@ def cleanDir():
 
 
 
-def injectMutant(mutations):
+def injectMutant():
     
     FaultUse = open("FaultUse.txt", "r")
     #mutants = len(mutations) * 3 + 1 #number of mutations for full coverage
@@ -63,27 +65,18 @@ def injectMutant(mutations):
     for y in FaultUse:
             counter += 1
             stdev = open("stdev.py", "r")
-            print("Back here:" + y)
             for z in stdev:
-                
-                print("y:" + y)
-                print("z:" + z)
-                
-
                 if (y == z):
                     memory = y
                     break
                 if (memory != "b"):
-                    dst = "Mu/T" + str(counter) + ".py"
-                    shutil.copy(src,dst)
-                    Mutant = open(dst, "r")
+                    Mutant = open(src, "r")
                     dst1 = "Mutations/Mutant" + str(counter) + ".py"
                     if(dst1 not in injectedFiles):
                         injectedFiles.append(dst1)
                     File = open(dst1, "w+")
                     for u in Mutant:
                         if (u == memory):
-                            print("replacement made")
                             u = u.replace(u, y)
                         File.write(u)
                     count += 1
@@ -93,9 +86,14 @@ def injectMutant(mutations):
                         os.remove(dst1)
                     if (count == 3):
                         break
+    
+    File.close()
+    Mutant.close()
+    FaultUse.close()
+    stdev.close()
+    os.remove("FaultUse.txt")
                     
-                    
-    cleanDir()                  
+                  
 
                         
             
@@ -121,7 +119,7 @@ def delete():
     
     
 def KillMutant(): 
-    injectMutant(generate_report())
+    
 
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
@@ -156,6 +154,8 @@ def KillMutant():
     
    
 
+generateReport()
+injectMutant()
 
 KillMutant()
 #delete() #remove directory with mutations inside
