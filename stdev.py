@@ -22,16 +22,16 @@ def stdev (array):
     std = math.sqrt((std / len(array))) 
     std *= 10.0
     std /= 10.0
-    
+
     print(round(std, 2))
 
 
 def main(): 
-    test = []
+    input = []
     for i in range(1, (len(sys.argv) -1)):
-        test.append(float(sys.argv[i]))
+        input.append(float(sys.argv[i]))
 
-    stdev(test)
+    stdev(input)
     sys.exit
 
 
