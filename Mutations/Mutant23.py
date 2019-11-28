@@ -1,6 +1,7 @@
 #simple standard deviation function
 
 import math
+import sys
 
 def stdev (array):
     if (len(array) == 0):
@@ -21,8 +22,19 @@ def stdev (array):
     std = math.sqrt((std / len(array))) 
     std /= 10.0
     std /= 10.0
-    return round(std, 2)
+    
+    print(round(std, 2))
 
 
+def main(): 
+    test = []
+    for i in range(1, (len(sys.argv) -1)):
+        test.append(float(sys.argv[i]))
 
-print(stdev([6,2,3,1]))
+    stdev(test)
+    sys.exit
+
+
+if __name__ == "__main__":
+    main()
+

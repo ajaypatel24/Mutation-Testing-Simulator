@@ -1,6 +1,8 @@
 import os
 import shutil 
+import subprocess
 
+injectedFiles = []
 
 def findOperator(string):
     operators = "+-*/"
@@ -70,6 +72,7 @@ def injectMutant():
                 if (memory != "b"):
                     Mutant = open(src, "r")
                     dst1 = "Mutations/Mutant" + str(counter) + ".py"
+                    injectedFiles.append(dst1)
                     File = open(dst1, "w+")
                     for u in Mutant:
                         if (u == memory):
@@ -114,6 +117,28 @@ def delete():
     #shutil.rmtree("Mutations")
     
     
+def KillMutant(): 
+    
+
+    with open('FaultList.txt', 'r') as file:
+        lines = file.readlines()
+
+    validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+
+    position = 0
+    for injected in injectedFiles:
+        print("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5")
+        output = subprocess.check_output("python Mutations/" + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+        if(output != validDeviation):
+            lines[position] = lines[position] + " MUTANT ALIVE"   
+        else: 
+            lines[position] = lines[position] + " MUTANT KILLED"   
+    
+        position += 1
+    
+    with open('FaultList.txt', 'w') as file:
+        file.writelines(lines)
+
     
                     
 
@@ -127,6 +152,7 @@ def delete():
 generateReport()
 injectMutant()
 
+KillMutant()
 #delete() #remove directory with mutations inside
 #fix()
 
