@@ -66,8 +66,6 @@ def injectMutant():
                 if (memory != "b"):
                     SUT = open(src, "r")
                     dst1 = "Mutations/Mutant" + str(counter) + ".py" 
-                    if(dst1 not in injectedFiles):
-                        injectedFiles.append(dst1)
                     File = open(dst1, "w+") #create file with name dst1
                     for u in SUT: #copy SUT into mutated file
                         if (u == memory): #value in memory has 3 mutations associated, once this line is hit
@@ -78,6 +76,8 @@ def injectMutant():
                     SUT.close()
                     if (counter % 4 == 1): #some files get generated with a missplaced mutant because the mutant is equal to the SUT
                         os.remove(dst1) #remove these files
+                        if(dst1 not in injectedFiles):
+                            injectedFiles.append(dst1)
                     if (count == 3): #once 3 mutations have been inserted, change memory value by breaking loop
                         break
     
@@ -110,7 +110,6 @@ def KillMutant():
         #    break
 
         if(">MUTATION SITE " in lines[position]):
-
             position += 1
 
         try:
