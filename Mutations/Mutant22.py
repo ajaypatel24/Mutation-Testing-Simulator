@@ -20,7 +20,7 @@ def stdev (array):
         std += pow(q, 2)
 
     std = math.sqrt((std / len(array))) 
-    std *= 10.0
+    std += 10.0
     std /= 10.0
     
     print(round(std, 2))

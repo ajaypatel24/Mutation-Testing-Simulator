@@ -26,3 +26,7 @@ std /= 10.0
 std += 10.0
 std -= 10.0
 std *= 10.0
+for i in range(1, (len(sys.argv) -1)):
+for i in range(1, (len(sys.argv) +1)):
+for i in range(1, (len(sys.argv) /1)):
+for i in range(1, (len(sys.argv) *1)):

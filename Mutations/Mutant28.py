@@ -21,7 +21,7 @@ def stdev (array):
 
     std = math.sqrt((std / len(array))) 
     std *= 10.0
-    std /= 10.0
+    std *= 10.0
     
     print(round(std, 2))
 
