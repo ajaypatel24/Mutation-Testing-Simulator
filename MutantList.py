@@ -4,6 +4,10 @@ import subprocess
 import re
 import threading
 import queue
+import time
+import sys
+import concurrent.futures
+from threading import Thread
 
 injectedFiles = []
 
@@ -91,8 +95,7 @@ def injectMutant():
     print(injectedFiles)
     os.remove("FaultUse.txt") #remove FaultUse.txt, it is no longer needed
 
-def killMutant(): 
-    
+def killMutant():     
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
 
@@ -121,7 +124,7 @@ def killMutant():
 
         position += 1
         
-    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + re.escape("% ") + "coverage\n")
+    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + "% " + "coverage\n")
     
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
@@ -134,7 +137,6 @@ def killMutantThread():
     validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
 
     mutantCount = len(injectedFiles)
-    print(mutantCount)
 
     files_a = injectedFiles[0:6]
     files_b = injectedFiles[6:15]
@@ -163,13 +165,11 @@ def killMutantThread():
 
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
-    
+
                     
 def threadLoop(que, lines, validDeviation, position, injectedFiles):
     output = ""
     killed = 0
-
-    print(injectedFiles)
 
     for injected in injectedFiles:
         if(">MUTATION SITE " in lines[position]):
@@ -189,8 +189,35 @@ def threadLoop(que, lines, validDeviation, position, injectedFiles):
     response = {"killed": killed}
     que.put(response)
 
-generateReport() #start by generating FaultUse.txt
-injectMutant() #inject mutants using FaultUse.txt
-#killMutant()
-killMutantThread()
+def main(): 
+
+    while(1):
+        selection = input("Welcome to the standard deviation mutation tester!\n 1. Test Generation\n 2. Test Injection\n 3. Kill Mutants (Single thread)\n 4. Kill Mutants (Parallel)\n 5. Exit\n")
+        
+        millis = int(round(time.time() * 1000))
+
+        if(selection == "1"):
+            generateReport()
+        elif(selection == "2"):
+            generateReport()
+            injectMutant()
+        elif(selection == "3"):
+            generateReport()
+            injectMutant()
+            killMutant()
+        elif(selection == "4"):
+            generateReport()
+            injectMutant()
+            killMutantThread()
+        else: 
+            sys.exit()
+        
+        subprocess.call('cls',shell=True)
+        print("Operation complete in " + str((round(time.time() * 1000)) - millis) + " ms. Please verify the generated files")
+
+    sys.exit()
+
+
+if __name__ == "__main__":
+    main()
 
