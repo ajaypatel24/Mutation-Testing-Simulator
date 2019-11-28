@@ -4,7 +4,7 @@ import shutil
 
 
 
-#import Mutant1 #run file within another file
+
 
 
 def findOperator(string):
@@ -18,6 +18,7 @@ def findOperator(string):
 
 def generate_report():
     FaultList = open("FaultList.txt","w+")
+    FaultUse = open("FaultUse.txt", "w+")
     if not os.path.exists("Mutations"):
         os.mkdir("Mutations")
     
@@ -33,29 +34,87 @@ def generate_report():
             lines.append(l.strip())
         if (len(l.strip()) != 0 and any(z in l.strip() for z in mutants)):
             mutations.append(l.strip())
-            FaultList.write(str(x))
-            FaultList.write(":")
+            #FaultList.write(str(x))
+            #FaultList.write(":")
             FaultList.write(l.strip()+"\n")
+            FaultUse.write(l+"\n")
+            
             op = findOperator(l.strip())
             for y in mutants:
                 if ( y != op):
                     FaultList.write(l.strip().replace(op,y) + "\n")
+                    FaultUse.write(l.replace(op,y) +"\n")
             
 
-    for x in mutations:
-        findOperator(x)
+    return mutations
         
             
-    print(mutations)
-
-
-    mutants = len(mutations) * 3 + 1 #number of mutations for full coverage
+def injectMutant(mutations):
+    
+    FaultUse = open("FaultUse.txt", "r")
+    #mutants = len(mutations) * 3 + 1 #number of mutations for full coverage
     src = os.path.realpath("stdev.py")
-    for y in mutations:
-            for x in range(1,mutants):
+    memory = "b"
+    count = 0
+    counter = 0
+    for y in FaultUse:
+            counter += 1
+            stdev = open("stdev.py", "r")
+            print("Back here:" + y)
+            for z in stdev:
                 
-                dst = "Mutant" + str(x) + ".py"
-                shutil.copy(src,dst)
+                print("y:" + y)
+                print("z:" + z)
+                
+
+                if (y == z):
+                    memory = y
+                    break
+                if (memory != "b"):
+                    dst = "Mu" + str(counter) + ".py"
+                    shutil.copy(src,dst)
+                    Mutant = open(dst, "r")
+                    dst1 = "Mutant" + str(counter) + ".py"
+                    File = open(dst1, "w+")
+                    for u in Mutant:
+                        if (u == memory):
+                            print("replacement made")
+                            u = u.replace(u, y)
+                        File.write(u)
+                    count += 1
+                    if (count == 3):
+                        break
+                    
+                    
+                        
+
+                        
+            
+            
+            '''
+            print("mem:" + memory)
+            dst = "Mu" + str(x) + ".py"
+            shutil.copy(src,dst)
+            Mutant = open(dst, "r")
+            #print("Y:" + y)
+            for z in Mutant:
+                z = z.strip()
+                if (len(z) == 0):
+                    continue
+                #print("Z:" + z)
+                if (y.strip() == z):
+                    print("Equality")
+                    memory = z
+                    break
+                   
+               ''' 
+
+            
+            
+
+            
+            
+                
             
         
 
@@ -80,7 +139,7 @@ def delete():
    
 
 
-#generate_report()
-delete() #remove directory with mutations inside
+injectMutant(generate_report())
+#delete() #remove directory with mutations inside
 #fix()
 
