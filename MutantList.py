@@ -2,6 +2,8 @@ import os
 import shutil 
 import subprocess
 import re
+import threading
+import queue
 
 injectedFiles = []
 
@@ -45,7 +47,6 @@ def generateReport():
                 if (y != op): #generate all possible mutations
                     FaultList.write(l.strip().replace(op,y) + "\n") #FaultList gets stripped version
                     FaultUse.write(l.replace(op,y) +"\n") #FaultUse gets unstripped 
-            
 
 
 #the following method injects the mutations created in generateReport into the SUT, each injection creates a new .py file 
@@ -89,13 +90,8 @@ def injectMutant():
     stdev.close()
     print(injectedFiles)
     os.remove("FaultUse.txt") #remove FaultUse.txt, it is no longer needed
-                    
-                  
 
-    
-    
-
-def KillMutant(): 
+def killMutant(): 
     
     with open('FaultList.txt', 'r') as file:
         lines = file.readlines()
@@ -130,11 +126,71 @@ def KillMutant():
     with open('FaultList.txt', 'w') as file:
         file.writelines(lines)
 
+
+def killMutantThread(): 
+    with open('FaultList.txt', 'r') as file:
+        lines = file.readlines()
+
+    validDeviation = subprocess.check_output("python stdev.py 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+
+    mutantCount = len(injectedFiles)
+    print(mutantCount)
+
+    files_a = injectedFiles[0:6]
+    files_b = injectedFiles[6:15]
+    files_c = injectedFiles[15:21]
+
+    que = queue.Queue()
+
+    t1 = threading.Thread(target=threadLoop, args=(que, lines, validDeviation, 0, files_a,))
+    t2 = threading.Thread(target=threadLoop, args=(que, lines, validDeviation, 8, files_b,))
+    t3 = threading.Thread(target=threadLoop, args=(que, lines, validDeviation, 20, files_c,))
+
+    t1.start()
+    t2.start()
+    t3.start()
+    t1.join()
+    t2.join()
+    t3.join()
+
+    result1 = que.get()
+    result2 = que.get()
+    result3 = que.get()
+
+    killed = result1["killed"] + result2["killed"] + result3["killed"]
+
+    lines.append(str(killed) + "/" + str(mutantCount) + " mutants killed, " + str(((killed / mutantCount) * 100)) + re.escape("% ") + "coverage\n")
+
+    with open('FaultList.txt', 'w') as file:
+        file.writelines(lines)
     
                     
+def threadLoop(que, lines, validDeviation, position, injectedFiles):
+    output = ""
+    killed = 0
 
+    print(injectedFiles)
+
+    for injected in injectedFiles:
+        if(">MUTATION SITE " in lines[position]):
+            position += 1
+        try:
+            output = subprocess.check_output("python " + injected + " 5.5 6.7 8.9 4.3 5 6 1 4 3 1 23 9 2 4 5 1 0 4 2 7 9 2 3 5", shell=True)
+        except (subprocess.CalledProcessError, ValueError, ZeroDivisionError) as e:
+            output = "ERROR"
+
+        if(output != validDeviation):
+            lines[position] = lines[position].strip('\n') + " MUTANT KILLED\n" 
+            killed += 1  
+        else: 
+            lines[position] += lines[position].strip('\n') + " MUTANT ALIVE\n"  
+        position += 1
+
+    response = {"killed": killed}
+    que.put(response)
 
 generateReport() #start by generating FaultUse.txt
 injectMutant() #inject mutants using FaultUse.txt
-KillMutant()
+#killMutant()
+killMutantThread()
 
