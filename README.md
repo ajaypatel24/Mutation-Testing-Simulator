@@ -1,7 +1,8 @@
 # Mutation-Testing-Simulator
 
 ## MutantList.py
-* generateReport\ 
-creates txt file outlining mutation sites by line number and listing all possible mutations
-* injectMutant\
-injects mutants into selected mutation sites, generates a new .py file for each mutation
+Take source code with mathematical operators
+1. Generate txt file with all mutation sites and potential mutants
+2. Create new files, 1 mutation inserted per file
+3. Run fault simulation and kill mutants if their outputs differ from expected output
+4. Run fault simulation in parallel to optimze run time
